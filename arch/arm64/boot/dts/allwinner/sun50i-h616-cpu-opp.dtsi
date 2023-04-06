@@ -70,23 +70,23 @@
 		        opp-microvolt = <1120000 1120000 1200000>;
 		};
 		
-		opp-1608000000 {
-			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-hz = /bits/ 64 <1608000000>;
-			opp-microvolt = <1160000 1160000 1200000>;
-		};
+		// opp-1608000000 {
+		// 	clock-latency-ns = <244144>; /* 8 32k periods */
+		// 	opp-hz = /bits/ 64 <1608000000>;
+		// 	opp-microvolt = <1160000 1160000 1200000>;
+		// };
 
-		opp-1704000000 {
-			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-hz = /bits/ 64 <1704000000>;
-			opp-microvolt = <1180000 1180000 1200000>;
-		};
+		// opp-1704000000 {
+		// 	clock-latency-ns = <244144>; /* 8 32k periods */
+		// 	opp-hz = /bits/ 64 <1704000000>;
+		// 	opp-microvolt = <1180000 1180000 1200000>;
+		// };
 
-		opp-1800000000 {
-			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-hz = /bits/ 64 <1800000000>;
-			opp-microvolt = <1200000 1200000 1200000>;
-		};
+		// opp-1800000000 {
+		// 	clock-latency-ns = <244144>; /* 8 32k periods */
+		// 	opp-hz = /bits/ 64 <1800000000>;
+		// 	opp-microvolt = <1200000 1200000 1200000>;
+		// };
 												
 	};
 };

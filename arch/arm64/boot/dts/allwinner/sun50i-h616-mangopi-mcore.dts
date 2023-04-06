@@ -62,6 +62,14 @@
 		regulator-always-on;
 	};
 
+	reg_vcc3v3: vcc3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc-3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
 	reg_usb1_vbus: usb1-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "usb1-vbus";
@@ -84,7 +92,7 @@
 };
 
 &ehci0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &ehci1 {
@@ -139,7 +147,7 @@
 
 
 &mmc0 {
-	vmmc-supply = <&reg_aldo1>;
+	vmmc-supply = <&reg_vcc3v3>;
 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
 	bus-width = <4>;
 	status = "okay";
@@ -190,7 +198,7 @@
 };
 
 &ohci0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &ohci1 {
@@ -283,17 +291,17 @@
 };
 
 &uart1 {
- uart-has-rtscts;
- pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
- pinctrl-names = "default";
- status = "okay";
+	uart-has-rtscts;
+	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+	pinctrl-names = "default";
+	status = "okay";
 
-   bluetooth {
+	bluetooth {
               compatible = "realtek,rtl8723ds-bt";
               device-wake-gpios = <&pio 6 17 GPIO_ACTIVE_HIGH>; /* PG17 */
               enable-gpios = <&pio 6 19 GPIO_ACTIVE_HIGH>; /* PG19 */
               host-wake-gpios = <&pio 6 16 GPIO_ACTIVE_HIGH>; /* PG16 */
- };
+	};
 };
 
 &uart2 {
@@ -303,8 +311,8 @@
 };
 
 &usbotg {
-	dr_mode = "host";	/* USB A type receptable */
-        status = "okay";
+	dr_mode = "otg";	/* USB A type receptable */
+	status = "okay";
 };
 
 &usbphy {
