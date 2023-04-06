@@ -625,6 +625,12 @@ F:	drivers/iio/accel/adxl372.c
 F:	drivers/iio/accel/adxl372_i2c.c
 F:	drivers/iio/accel/adxl372_spi.c
 
+AF8133J THREE-AXIS MAGNETOMETER DRIVER
+M:	Icenowy Zheng <icenowy@aosc.io>
+S:	Maintained
+F:	Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
+F:	drivers/iio/magnetometer/af8133j.c
+
 AF9013 MEDIA DRIVER
 M:	Antti Palosaari <crope@iki.fi>
 L:	linux-media@vger.kernel.org
@@ -3352,6 +3358,19 @@ F:	include/linux/audit_arch.h
 F:	include/uapi/linux/audit.h
 F:	kernel/audit*
 F:	lib/*audit.c
+
+AUFS (advanced multi layered unification filesystem) FILESYSTEM
+M:	"J. R. Okajima" <hooanon05g@gmail.com>
+L:	aufs-users@lists.sourceforge.net (members only)
+L:	linux-unionfs@vger.kernel.org
+S:	Supported
+W:	http://aufs.sourceforge.net
+T:	git://github.com/sfjro/aufs4-linux.git
+F:	Documentation/ABI/testing/debugfs-aufs
+F:	Documentation/ABI/testing/sysfs-aufs
+F:	Documentation/filesystems/aufs/
+F:	fs/aufs/
+F:	include/uapi/linux/aufs_type.h
 
 AUXILIARY DISPLAY DRIVERS
 M:	Miguel Ojeda <ojeda@kernel.org>
@@ -8947,6 +8966,12 @@ S:	Supported
 W:	http://www.highpoint-tech.com
 F:	Documentation/scsi/hptiop.rst
 F:	drivers/scsi/hptiop.c
+
+HIMAX HM5065 SENSOR DRIVER
+M:	Ondrej Jirman <kernel@xff.cz>
+L:	linux-media@vger.kernel.org
+S:	Supported
+F:	drivers/media/i2c/hm5065.c
 
 HIPPI
 M:	Jes Sorensen <jes@trained-monkey.org>
@@ -15955,6 +15980,12 @@ F:	arch/*/include/asm/platform-feature.h
 F:	include/asm-generic/platform-feature.h
 F:	include/linux/platform-feature.h
 F:	kernel/platform-feature.c
+
+PINE64 PINEPHONE KEYBOARD DRIVER
+M:	Samuel Holland <samuel@sholland.org>
+S:	Supported
+F:	Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+F:	drivers/input/keyboard/pinephone-keyboard.c
 
 PLDMFW LIBRARY
 M:	Jacob Keller <jacob.e.keller@intel.com>

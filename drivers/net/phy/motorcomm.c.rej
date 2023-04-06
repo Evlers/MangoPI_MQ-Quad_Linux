@@ -1,0 +1,16 @@
+--- drivers/net/phy/motorcomm.c
++++ drivers/net/phy/motorcomm.c
+@@ -229,11 +229,11 @@ static int yt8512_config_init(struct phy_device *phydev)
+ #endif
+ 	if (ret < 0)
+ 		return ret;
+-
++#if 0
+ 	ret = yt8512_clk_init(phydev);
+ 	if (ret < 0)
+ 		return ret;
+-
++#endif
+ 	ret = yt8512_led_init(phydev);
+ 
+ 	/* disable auto sleep */

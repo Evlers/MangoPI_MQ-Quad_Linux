@@ -350,7 +350,7 @@ static void rtw89_ops_bss_info_changed(struct ieee80211_hw *hw,
 			rtw89_phy_set_bss_color(rtwdev, vif);
 			rtw89_chip_cfg_txpwr_ul_tb_offset(rtwdev, vif);
 			rtw89_mac_port_update(rtwdev, rtwvif);
-			rtw89_store_op_chan(rtwdev);
+			rtw89_store_op_chan(rtwdev, true);
 		} else {
 			/* Abort ongoing scan if cancel_scan isn't issued
 			 * when disconnected by peer
@@ -454,7 +454,7 @@ static int __rtw89_ops_sta_state(struct ieee80211_hw *hw,
 
 	if (old_state == IEEE80211_STA_AUTH &&
 	    new_state == IEEE80211_STA_ASSOC) {
-		if (vif->type == NL80211_IFTYPE_STATION)
+		if (vif->type == NL80211_IFTYPE_STATION && !sta->tdls)
 			return 0; /* defer to bss_info_changed to have vif info */
 		return rtw89_core_sta_assoc(rtwdev, vif, sta);
 	}

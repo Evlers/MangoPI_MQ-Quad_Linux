@@ -1,0 +1,8 @@
+--- arch/arm64/boot/dts/allwinner/Makefile
++++ arch/arm64/boot/dts/allwinner/Makefile
+@@ -51,4 +51,5 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6-mini.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-orangepi-zero2.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-x96-mate.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-mangopi-mcore.dtb
++
+ subdir-y	:= $(dts-dirs) overlay

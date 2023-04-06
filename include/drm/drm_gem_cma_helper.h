@@ -34,6 +34,10 @@ struct drm_gem_cma_object {
 
 struct drm_gem_cma_object *drm_gem_cma_create(struct drm_device *drm,
 					      size_t size);
+struct drm_gem_cma_object *
+drm_gem_cma_create_with_handle(struct drm_file *file_priv,
+			       struct drm_device *drm, size_t size,
+			       uint32_t *handle);
 void drm_gem_cma_free(struct drm_gem_cma_object *cma_obj);
 void drm_gem_cma_print_info(const struct drm_gem_cma_object *cma_obj,
 			    struct drm_printer *p, unsigned int indent);

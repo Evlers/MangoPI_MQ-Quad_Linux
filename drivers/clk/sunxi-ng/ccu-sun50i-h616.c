@@ -35,6 +35,12 @@
  * testing", so it's not modelled and then force to 0.
  */
 #define SUN50I_H616_PLL_CPUX_REG	0x000
+
+static struct ccu_sdm_setting pll_audio_sdm_table[] = {
+	{ .rate = 90316800, .pattern = 0xc001288d, .m = 3, .n = 22 },
+	{ .rate = 98304000, .pattern = 0xc001eb85, .m = 5, .n = 40 },
+};
+
 static struct ccu_mult pll_cpux_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(28),
@@ -227,8 +233,11 @@ static struct ccu_nm pll_audio_hs_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(28),
 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
-	.m		= _SUNXI_CCU_DIV(1, 1), /* input divider */
+	.m		= _SUNXI_CCU_DIV(16, 6),
+	.sdm		= _SUNXI_CCU_SDM(pll_audio_sdm_table,
+					 BIT(24), 0x178, BIT(31)),
 	.common		= {
+	        .features	= CCU_FEATURE_SIGMA_DELTA_MOD,
 		.reg		= 0x078,
 		.hw.init	= CLK_HW_INIT("pll-audio-hs", "osc24M",
 					      &ccu_nm_ops,
@@ -361,7 +370,7 @@ static SUNXI_CCU_GATE(bus_dbg_clk, "bus-dbg", "psi-ahb1-ahb2",
 static SUNXI_CCU_GATE(bus_psi_clk, "bus-psi", "psi-ahb1-ahb2",
 		      0x79c, BIT(0), 0);
 
-static SUNXI_CCU_GATE(bus_pwm_clk, "bus-pwm", "apb1", 0x7ac, BIT(0), 0);
+//static SUNXI_CCU_GATE(bus_pwm_clk, "bus-pwm", "apb1", 0x7ac, BIT(0), 0);
 
 static SUNXI_CCU_GATE(bus_iommu_clk, "bus-iommu", "apb1", 0x7bc, BIT(0), 0);
 
@@ -688,13 +697,13 @@ static const struct clk_hw *clk_parent_pll_audio[] = {
  */
 static CLK_FIXED_FACTOR_HWS(pll_audio_1x_clk, "pll-audio-1x",
 			    clk_parent_pll_audio,
-			    96, 1, CLK_SET_RATE_PARENT);
+			    4, 1, CLK_SET_RATE_PARENT);
 static CLK_FIXED_FACTOR_HWS(pll_audio_2x_clk, "pll-audio-2x",
 			    clk_parent_pll_audio,
-			    48, 1, CLK_SET_RATE_PARENT);
+			    2, 1, CLK_SET_RATE_PARENT);
 static CLK_FIXED_FACTOR_HWS(pll_audio_4x_clk, "pll-audio-4x",
 			    clk_parent_pll_audio,
-			    24, 1, CLK_SET_RATE_PARENT);
+			    1, 1, CLK_SET_RATE_PARENT);
 
 static const struct clk_hw *pll_periph0_parents[] = {
 	&pll_periph0_clk.common.hw
@@ -768,7 +777,7 @@ static struct ccu_common *sun50i_h616_ccu_clks[] = {
 	&avs_clk.common,
 	&bus_dbg_clk.common,
 	&bus_psi_clk.common,
-	&bus_pwm_clk.common,
+//	&bus_pwm_clk.common,
 	&bus_iommu_clk.common,
 	&dram_clk.common,
 	&mbus_dma_clk.common,
@@ -901,7 +910,7 @@ static struct clk_hw_onecell_data sun50i_h616_hw_clks = {
 		[CLK_AVS]		= &avs_clk.common.hw,
 		[CLK_BUS_DBG]		= &bus_dbg_clk.common.hw,
 		[CLK_BUS_PSI]		= &bus_psi_clk.common.hw,
-		[CLK_BUS_PWM]		= &bus_pwm_clk.common.hw,
+//		[CLK_BUS_PWM]		= &bus_pwm_clk.common.hw,
 		[CLK_BUS_IOMMU]		= &bus_iommu_clk.common.hw,
 		[CLK_DRAM]		= &dram_clk.common.hw,
 		[CLK_MBUS_DMA]		= &mbus_dma_clk.common.hw,
@@ -1130,13 +1139,10 @@ static int sun50i_h616_ccu_probe(struct platform_device *pdev)
 		writel(val, reg + usb2_clk_regs[i]);
 	}
 
-	/*
-	 * Force the post-divider of pll-audio to 12 and the output divider
-	 * of it to 2, so 24576000 and 22579200 rates can be set exactly.
-	 */
 	val = readl(reg + SUN50I_H616_PLL_AUDIO_REG);
-	val &= ~(GENMASK(21, 16) | BIT(0));
-	writel(val | (11 << 16) | BIT(0), reg + SUN50I_H616_PLL_AUDIO_REG);
+	val &= ~BIT(1);
+	val |= BIT(0);
+	writel(val, reg + SUN50I_H616_PLL_AUDIO_REG); 
 
 	/*
 	 * First clock parent (osc32K) is unusable for CEC. But since there

@@ -3,6 +3,7 @@
 
 /dts-v1/;
 #include "sun50i-h5.dtsi"
+#include "sun50i-h5-cpu-opp.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -59,7 +60,7 @@
 
 		sw4 {
 			label = "sw4";
-			linux,code = <BTN_0>;
+			linux,code = <KEY_POWER>;
 			gpios = <&r_pio 0 3 GPIO_ACTIVE_LOW>;
 			wakeup-source;
 		};
@@ -92,10 +93,6 @@
 		"MIC1", "Mic",
 		"Mic",  "MBIAS";
 	status = "okay";
-};
-
-&cpu0 {
-	cpu-supply = <&reg_vdd_cpux>;
 };
 
 &de {
@@ -144,6 +141,10 @@
 	};
 };
 
+&i2s2 {
+	status = "okay";
+};
+
 &ir {
 	pinctrl-names = "default";
 	pinctrl-0 = <&r_ir_rx_pin>;
@@ -173,31 +174,32 @@
 	status = "okay";
 };
 
-&r_i2c {
+&sound_hdmi {
 	status = "okay";
-
-	reg_vdd_cpux: regulator@65 {
-		compatible = "silergy,sy8106a";
-		reg = <0x65>;
-		regulator-name = "vdd-cpux";
-		silergy,fixed-microvolt = <1100000>;
-		regulator-min-microvolt = <1000000>;
-		regulator-max-microvolt = <1400000>;
-		regulator-ramp-delay = <200>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
 };
 
-&spi0  {
+&spi0 {
 	status = "okay";
-
-	flash@0 {
+	spi-flash@0 {
 		#address-cells = <1>;
-		#size-cells = <1>;
+		#size-cells = <0>;
 		compatible = "jedec,spi-nor";
-		reg = <0>;
-		spi-max-frequency = <40000000>;
+		reg = <0>; /* Chip select 0 */
+		spi-max-frequency = <10000000>;
+		status = "okay";
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			partition@0 {
+				label = "uboot";
+				reg = <0x0 0x100000>;
+			};
+			partition@100000 {
+				label = "env";
+				reg = <0x100000 0x100000>;
+			};
+		};
 	};
 };
 

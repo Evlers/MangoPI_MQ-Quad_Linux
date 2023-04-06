@@ -125,8 +125,8 @@ int rtw89_mfw_recognize(struct rtw89_dev *rtwdev, enum rtw89_fw_type type,
 			struct rtw89_fw_suit *fw_suit)
 {
 	struct rtw89_fw_info *fw_info = &rtwdev->fw;
-	const u8 *mfw = fw_info->firmware->data;
-	u32 mfw_len = fw_info->firmware->size;
+	const u8 *mfw = fw_info->firmware;
+	u32 mfw_len = fw_info->firmware_size;
 	const struct rtw89_mfw_hdr *mfw_hdr = (const struct rtw89_mfw_hdr *)mfw;
 	const struct rtw89_mfw_info *mfw_info;
 	int i;
@@ -533,7 +533,10 @@ static void rtw89_load_firmware_cb(const struct firmware *firmware, void *contex
 		return;
 	}
 
-	fw->firmware = firmware;
+	fw->firmware = vmalloc(firmware->size);
+	if (fw->firmware)
+		memcpy((void *)fw->firmware, firmware->data, firmware->size);
+	release_firmware(firmware);
 	complete_all(&fw->completion);
 }
 
@@ -562,8 +565,10 @@ void rtw89_unload_firmware(struct rtw89_dev *rtwdev)
 
 	rtw89_wait_firmware_completion(rtwdev);
 
-	if (fw->firmware)
-		release_firmware(fw->firmware);
+	if (fw->firmware) {
+		vfree(fw->firmware);
+		fw->firmware = NULL;
+	}
 }
 
 #define H2C_CAM_LEN 60
@@ -579,7 +584,7 @@ int rtw89_fw_h2c_cam(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvif,
 	}
 	skb_put(skb, H2C_CAM_LEN);
 	rtw89_cam_fill_addr_cam_info(rtwdev, rtwvif, rtwsta, scan_mac_addr, skb->data);
-	rtw89_cam_fill_bssid_cam_info(rtwdev, rtwvif, skb->data);
+	rtw89_cam_fill_bssid_cam_info(rtwdev, rtwvif, rtwsta, skb->data);
 
 	rtw89_h2c_pkt_set_hdr(rtwdev, skb, FWCMD_TYPE_H2C,
 			      H2C_CAT_MAC,
@@ -2257,7 +2262,7 @@ static int rtw89_hw_scan_add_chan_list(struct rtw89_dev *rtwdev,
 		list_add_tail(&ch_info->list, &chan_list);
 		off_chan_time += ch_info->period;
 	}
-	rtw89_fw_h2c_scan_list_offload(rtwdev, list_len, &chan_list);
+	ret = rtw89_fw_h2c_scan_list_offload(rtwdev, list_len, &chan_list);
 
 out:
 	list_for_each_entry_safe(ch_info, tmp, &chan_list, list) {
@@ -2339,6 +2344,9 @@ void rtw89_hw_scan_complete(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
 	rtwvif->scan_req = NULL;
 	rtwvif->scan_ies = NULL;
 	rtwdev->scan_info.scanning_vif = NULL;
+
+	if (rtwvif->net_type != RTW89_NET_TYPE_NO_LINK)
+		rtw89_store_op_chan(rtwdev, false);
 }
 
 void rtw89_hw_scan_abort(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif)
@@ -2365,20 +2373,27 @@ int rtw89_hw_scan_offload(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
 		if (ret)
 			goto out;
 	}
-	rtw89_fw_h2c_scan_offload(rtwdev, &opt, rtwvif);
+	ret = rtw89_fw_h2c_scan_offload(rtwdev, &opt, rtwvif);
 out:
 	return ret;
 }
 
-void rtw89_store_op_chan(struct rtw89_dev *rtwdev)
+void rtw89_store_op_chan(struct rtw89_dev *rtwdev, bool backup)
 {
 	struct rtw89_hw_scan_info *scan_info = &rtwdev->scan_info;
 	struct rtw89_hal *hal = &rtwdev->hal;
 
-	scan_info->op_pri_ch = hal->current_primary_channel;
-	scan_info->op_chan = hal->current_channel;
-	scan_info->op_bw = hal->current_band_width;
-	scan_info->op_band = hal->current_band_type;
+	if (backup) {
+		scan_info->op_pri_ch = hal->current_primary_channel;
+		scan_info->op_chan = hal->current_channel;
+		scan_info->op_bw = hal->current_band_width;
+		scan_info->op_band = hal->current_band_type;
+	} else {
+		hal->current_primary_channel = scan_info->op_pri_ch;
+		hal->current_channel = scan_info->op_chan;
+		hal->current_band_width = scan_info->op_bw;
+		hal->current_band_type = scan_info->op_band;
+	}
 }
 
 #define H2C_FW_CPU_EXCEPTION_LEN 4

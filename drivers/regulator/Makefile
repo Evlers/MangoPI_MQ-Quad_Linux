@@ -9,6 +9,7 @@ obj-$(CONFIG_OF) += of_regulator.o
 obj-$(CONFIG_REGULATOR_FIXED_VOLTAGE) += fixed.o
 obj-$(CONFIG_REGULATOR_VIRTUAL_CONSUMER) += virtual.o
 obj-$(CONFIG_REGULATOR_USERSPACE_CONSUMER) += userspace-consumer.o
+obj-$(CONFIG_REGULATOR_USERSPACE_CONSUMER_OF) += userspace-consumer-of.o
 
 obj-$(CONFIG_REGULATOR_88PG86X) += 88pg86x.o
 obj-$(CONFIG_REGULATOR_88PM800) += 88pm800-regulator.o
@@ -27,7 +28,7 @@ obj-$(CONFIG_REGULATOR_ARM_SCMI) += scmi-regulator.o
 obj-$(CONFIG_REGULATOR_AS3711) += as3711-regulator.o
 obj-$(CONFIG_REGULATOR_AS3722) += as3722-regulator.o
 obj-$(CONFIG_REGULATOR_ATC260X) += atc260x-regulator.o
-obj-$(CONFIG_REGULATOR_AXP20X) += axp20x-regulator.o
+obj-$(CONFIG_REGULATOR_AXP20X) += axp2101-regulator.o
 obj-$(CONFIG_REGULATOR_BCM590XX) += bcm590xx-regulator.o
 obj-$(CONFIG_REGULATOR_BD71815)	+= bd71815-regulator.o
 obj-$(CONFIG_REGULATOR_BD71828) += bd71828-regulator.o
@@ -176,5 +177,6 @@ obj-$(CONFIG_REGULATOR_WM831X) += wm831x-ldo.o
 obj-$(CONFIG_REGULATOR_WM8350) += wm8350-regulator.o
 obj-$(CONFIG_REGULATOR_WM8400) += wm8400-regulator.o
 obj-$(CONFIG_REGULATOR_WM8994) += wm8994-regulator.o
+obj-$(CONFIG_REGULATOR_TP65185X) += tp65185x.o
 
 ccflags-$(CONFIG_REGULATOR_DEBUG) += -DDEBUG
